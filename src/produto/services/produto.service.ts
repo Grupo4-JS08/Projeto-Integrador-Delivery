@@ -2,11 +2,12 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DeleteResult, ILike, Repository } from "typeorm";
 import { Produto } from "../entities/produto.entity";
+import { CategoriaService } from "../../categoria/services/categoria.service";
 
 
 @Injectable()
 export class ProdutoService {
-    findByNome(nome: string): Promise<Produto[]> {
+    findByItem(item: string): Promise<Produto[]> {
         throw new Error("Method not implemented.");
     }
     constructor(
@@ -42,10 +43,10 @@ export class ProdutoService {
         return produto;
     }
 
-    async findAllByNome(nome: string): Promise<Produto[]> {
+    async findAllByItem(item: string): Promise<Produto[]> {
         return await this.produtoRepository.find({
             where:{
-                nome: ILike(`%${nome}%`)
+                item: ILike(`%${item}%`)
             },
             relations:{
                 categoria: true,
