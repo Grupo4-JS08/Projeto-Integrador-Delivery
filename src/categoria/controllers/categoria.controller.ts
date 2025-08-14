@@ -1,15 +1,28 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "../../auth/guard/jwt-auth.guard";
-import { CategoriaService } from "../services/categoria.service";
-import { Categoria } from "../entities/categoria.entity";
+/* eslint-disable*/
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
+import { CategoriaService } from '../services/categoria.service';
+import { Categoria } from '../entities/categoria.entity';
 
 @ApiTags('Categoria')
 @UseGuards(JwtAuthGuard)
-@Controller("/categorias")
+@Controller('/categorias')
 @ApiBearerAuth()
 export class CategoriaController {
-  constructor(private readonly categoriaService: CategoriaService) { }
+  constructor(private readonly categoriaService: CategoriaService) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -25,7 +38,9 @@ export class CategoriaController {
 
   @Get('/descricao/:descricao')
   @HttpCode(HttpStatus.OK)
-  findAllBydescricao(@Param('descricao') descricao: string): Promise<Categoria[]> {
+  findAllBydescricao(
+    @Param('descricao') descricao: string,
+  ): Promise<Categoria[]> {
     return this.categoriaService.findAllByDescricao(descricao);
   }
 
@@ -43,8 +58,7 @@ export class CategoriaController {
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  delete(@Param('id', ParseIntPipe) id: number){
+  delete(@Param('id', ParseIntPipe) id: number) {
     return this.categoriaService.delete(id);
   }
-
 }

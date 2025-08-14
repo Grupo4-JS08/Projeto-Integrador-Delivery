@@ -1,26 +1,27 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { UsuarioModule } from './usuario/usuario.module';
+import { AppController } from './app.controller';
 import { ConfigModule } from '@nestjs/config';
-import { ProdService } from './data/services/prod.service';
+import { DevService } from './data/services/dev.service';
 import { ProdutoModule } from './produto/produto.module';
 import { CategoriaModule } from './categoria/categoria.module';
 
 @Module({
   imports: [
-ConfigModule.forRoot(),
-TypeOrmModule.forRootAsync({
-	useClass: ProdService,
-    imports: [ConfigModule],
-}),
+    ConfigModule.forRoot(),
+    TypeOrmModule.forRootAsync({
+      useClass: DevService,
+      imports: [ConfigModule],
+    }),
+
     ProdutoModule,
     CategoriaModule,
     AuthModule,
-    UsuarioModule
+    UsuarioModule,
   ],
   controllers: [AppController],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

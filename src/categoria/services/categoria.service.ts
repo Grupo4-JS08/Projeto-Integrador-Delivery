@@ -1,70 +1,64 @@
+/* eslint-disable*/
 import { Categoria } from '../entities/categoria.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DeleteResult, ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class CategoriaService {
-    constructor(
-        @InjectRepository(Categoria)
-        private categoriaRepository: Repository<Categoria>
-    ) { }
+  constructor(
+    @InjectRepository(Categoria)
+    private categoriaRepository: Repository<Categoria>,
+  ) {}
 
-    async findAll(): Promise<Categoria[]> {
-        return await this.categoriaRepository.find({
-            relations: {
-                produto: true
-            }
-        });
-    }
+  async findAll(): Promise<Categoria[]> {
+    return await this.categoriaRepository.find({
+      relations: {
+        produto: true,
+      },
+    });
+  }
 
-    async findById(id: number): Promise<Categoria> {
+  async findById(id: number): Promise<Categoria> {
+    let categoria = await this.categoriaRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        produto: true,
+      },
+    });
 
-        let categoria = await this.categoriaRepository.findOne({
-            where: {
-                id
-            },
-            relations: {
-                produto: true
-            }
-        });
+    if (!categoria)
+      throw new HttpException('Categoria não encontrada', HttpStatus.NOT_FOUND);
 
-        if (!categoria)
-            throw new HttpException('Categoria não encontrada', HttpStatus.NOT_FOUND);
+    return categoria;
+  }
 
-        return categoria;
-    }
+  async findAllByDescricao(descricao: string): Promise<Categoria[]> {
+    return await this.categoriaRepository.find({
+      where: {
+        descricao: ILike(`%${descricao}%`),
+      },
+      relations: {
+        produto: true,
+      },
+    });
+  }
 
-    async findAllByDescricao(descricao: string): Promise<Categoria[]> {
+  async create(categoria: Categoria): Promise<Categoria> {
+    return await this.categoriaRepository.save(categoria);
+  }
 
-        return await this.categoriaRepository.find({
-            where: {
-                descricao: ILike(`%${descricao}%`)
-            },
-            relations: {
-                produto: true
-            }
-        })
-    }
+  async update(categoria: Categoria): Promise<Categoria> {
+    await this.findById(categoria.id);
 
-    async create (categoria: Categoria): Promise<Categoria>{
-        return await this.categoriaRepository.save(categoria);
-    }
+    return await this.categoriaRepository.save(categoria);
+  }
 
-    async update (categoria: Categoria): Promise<Categoria>{
+  async delete(id: number): Promise<DeleteResult> {
+    await this.findById(id);
 
-        await this.findById(categoria.id);
-
-        return await this.categoriaRepository.save(categoria);
-
-    }
-
-    async delete (id: number): Promise<DeleteResult> {
-
-        await this.findById(id);
-
-        return await this.categoriaRepository.delete(id);
-        
-    }
-
+    return await this.categoriaRepository.delete(id);
+  }
 }

@@ -1,84 +1,78 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { DeleteResult, ILike, Repository } from "typeorm";
-import { Produto } from "../entities/produto.entity";
-import { CategoriaService } from "../../categoria/services/categoria.service";
-
+/* eslint-disable*/
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, ILike, Repository } from 'typeorm';
+import { Produto } from '../entities/produto.entity';
+import { CategoriaService } from '../../categoria/services/categoria.service';
 
 @Injectable()
 export class ProdutoService {
-    findByItem(item: string): Promise<Produto[]> {
-        throw new Error("Method not implemented.");
-    }
-    constructor(
-        @InjectRepository(Produto)
-        private produtoRepository: Repository<Produto>,
-        private categoriaService: CategoriaService
-    ) { }
+  constructor(
+    @InjectRepository(Produto)
+    private produtoRepository: Repository<Produto>,
+    private categoriaService: CategoriaService,
+  ) {}
 
-    async findAll(): Promise<Produto[]> {
-        return await this.produtoRepository.find({
-            relations:{
-                categoria: true,
-                usuario: true
-            }
-        });
-    }
+  async findAll(): Promise<Produto[]> {
+    return await this.produtoRepository.find({
+      relations: {
+        categoria: true,
+        //usuario: true,
+      },
+    });
+  }
 
-    async findById(id: number): Promise<Produto> {
+  async findById(id: number): Promise<Produto> {
+    const produto = await this.produtoRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        categoria: true,
+        //usuario: true,
+      },
+    });
 
-        const produto = await this.produtoRepository.findOne({
-            where: {
-                id
-            },
-            relations:{
-                categoria: true,
-                usuario: true
-            }
-        });
+    if (!produto)
+      throw new HttpException('Produto não encontrado!', HttpStatus.NOT_FOUND);
 
-        if (!produto)
-            throw new HttpException('Produto não encontrado!', HttpStatus.NOT_FOUND);
+    return produto;
+  }
 
-        return produto;
-    }
+  async findByItem(item: string): Promise<Produto[]> {
+    return await this.produtoRepository.find({
+      where: {
+        item: ILike(`%${item}%`),
+      },
+      relations: {
+        categoria: true,
+        //usuario: true,
+      },
+    });
+  }
 
-    async findAllByItem(item: string): Promise<Produto[]> {
-        return await this.produtoRepository.find({
-            where:{
-                item: ILike(`%${item}%`)
-            },
-            relations:{
-                categoria: true,
-                usuario: true
-            }
-        })
-    }
+  async findByObjetivo(objetivo: 'emagrecer' | 'hipertrofia' | 'geral'): Promise<Produto[]> {
+  return this.produtoRepository.find({
+    where: { objetivo },
+  });
+}
+  async create(produto: Produto): Promise<Produto> {
+    await this.categoriaService.findById(produto.categoria.id);
 
-    async create(produto: Produto): Promise<Produto> {
-       
-      	await this.categoriaService.findById(produto.categoria.id)
-            
-        return await this.produtoRepository.save(produto);
+    return await this.produtoRepository.save(produto);
+  }
 
-    }
+  async update(produto: Produto): Promise<Produto> {
+    await this.findById(produto.id);
 
-    async update(produto: Produto): Promise<Produto> {
-        
-		await this.findById(produto.id);
+    await this.categoriaService.findById(produto.categoria.id);
 
-		await this.categoriaService.findById(produto.categoria.id)
-                
-		return await this.produtoRepository.save(produto);
-    
-    }
+    return await this.produtoRepository.save(produto);
+  }
 
-    async delete(id: number): Promise<DeleteResult> {
-        
-        await this.findById(id);
+  async delete(id: number): Promise<DeleteResult> {
+    await this.findById(id);
 
-        return await this.produtoRepository.delete(id);
-
-    }
-
+    return await this.produtoRepository.delete(id);
+  }
 }

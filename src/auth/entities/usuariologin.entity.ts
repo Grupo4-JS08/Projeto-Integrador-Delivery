@@ -1,11 +1,10 @@
-import { ApiProperty } from "@nestjs/swagger"
+/* eslint-disable*/
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UsuarioLogin {
+  @ApiProperty()
+  public usuario: string;
 
-    @ApiProperty() 
-    public usuario: string
-
-    @ApiProperty() 
-    public senha: string
-
+  @ApiProperty()
+  public senha: string;
 }
