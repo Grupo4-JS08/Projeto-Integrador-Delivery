@@ -1,4 +1,3 @@
-/* eslint-disable*/
 import { forwardRef, Module } from '@nestjs/common';
 import { Bcrypt } from './bcrypt/bcrypt';
 import { UsuarioModule } from '../usuario/usuario.module';

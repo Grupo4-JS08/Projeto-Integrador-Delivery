@@ -3,9 +3,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const theme = new SwaggerTheme();
 
   const config = new DocumentBuilder()
     .setTitle('PixelChef')
@@ -17,10 +20,16 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addBearerAuth()
-    .build();
+    .build()
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/swagger', app, document);
+
+  const options = {
+    customSiteTitle: "PixelChef",
+    customCss: theme.getBuffer(SwaggerThemeNameEnum.DRACULA)
+  }
+    SwaggerModule.setup("/swagger", app, document, options);
+
 
   process.env.TZ = '-03:00';
   app.useGlobalPipes(new ValidationPipe());

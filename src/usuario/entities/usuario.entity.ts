@@ -2,13 +2,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Produto } from '../../produto/entities/produto.entity';
 
 @Entity({ name: 'tb_usuarios' })
 export class Usuario {
   @PrimaryGeneratedColumn()
   @ApiProperty()
   id: number;
+
+  @Column({ type: 'boolean', default: false })
+  isMasterAdmin?: boolean
 
   @IsNotEmpty()
   @Column({ length: 255, nullable: false })
@@ -39,9 +41,4 @@ export class Usuario {
   @Column({ length: 5000 })
   @ApiProperty()
   objetivo: string;
-
-  // @IsOptional()
-  // @ApiProperty()
-  // @OneToMany(() => Produto, (produto) => produto.usuario)
-  // produto: Produto[];
 }

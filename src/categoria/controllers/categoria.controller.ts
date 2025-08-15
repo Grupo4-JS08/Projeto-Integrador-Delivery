@@ -1,4 +1,3 @@
-/* eslint-disable*/
 import {
   Body,
   Controller,
@@ -16,9 +15,9 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
 import { CategoriaService } from '../services/categoria.service';
 import { Categoria } from '../entities/categoria.entity';
+import { RolesGuard } from '../../auth/guard/roles.guard';
 
 @ApiTags('Categoria')
-@UseGuards(JwtAuthGuard)
 @Controller('/categorias')
 @ApiBearerAuth()
 export class CategoriaController {
@@ -46,18 +45,21 @@ export class CategoriaController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   create(@Body() categoria: Categoria): Promise<Categoria> {
     return this.categoriaService.create(categoria);
   }
 
   @Put()
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   update(@Body() categoria: Categoria): Promise<Categoria> {
     return this.categoriaService.update(categoria);
   }
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.categoriaService.delete(id);
   }

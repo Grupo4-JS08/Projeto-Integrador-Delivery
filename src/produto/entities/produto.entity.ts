@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsNotEmpty } from 'class-validator';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Categoria } from '../../categoria/entities/categoria.entity';
-import { Usuario } from '../../usuario/entities/usuario.entity';
 
 @Entity({ name: 'tb_produtos' })
 export class Produto {
@@ -38,9 +37,4 @@ export class Produto {
   })
   categoria: Categoria;
 
-  // @ApiProperty({ type: () => Usuario })
-  // @ManyToOne(() => Usuario, (usuario) => usuario.produto, {
-  //   onDelete: 'CASCADE',
-  // })
-  // usuario: Usuario;
 }

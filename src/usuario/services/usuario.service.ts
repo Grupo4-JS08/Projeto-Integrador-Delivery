@@ -21,20 +21,13 @@ export class UsuarioService {
   }
 
   async findAll(): Promise<Usuario[]> {
-    return await this.usuarioRepository.find({
-      relations: {
-        //produto: true
-      },
-    });
+    return await this.usuarioRepository.find();
   }
 
   async findById(id: number): Promise<Usuario> {
     const usuario = await this.usuarioRepository.findOne({
       where: {
         id,
-      },
-      relations: {
-        //produto: true,
       },
     });
 
@@ -58,7 +51,6 @@ export class UsuarioService {
     await this.findById(usuario.id);
 
     if (!usuario.id)
-      //(usuario.id == undefined)
       throw new HttpException('Id não informado!', HttpStatus.BAD_REQUEST);
 
     const buscaUsuario = await this.findByUsuario(usuario.usuario);
