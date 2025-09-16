@@ -20,9 +20,7 @@ import { ProdutoService } from '../services/produto.service';
 import { RolesGuard } from '../../auth/guard/roles.guard';
 
 @ApiTags('Produtos')
-@UseGuards(JwtAuthGuard)
 @Controller('/produtos')
-@ApiBearerAuth()
 export class ProdutoController {
   constructor(private readonly produtoService: ProdutoService) {}
 
@@ -47,20 +45,24 @@ export class ProdutoController {
   @Get('recomendacao/:objetivo')
   async recomendarPorObjetivo(@Param('objetivo') objetivo: string) {
     if (!['emagrecer', 'hipertrofia', 'geral'].includes(objetivo)) {
-      throw new HttpException('Objetivo inválido!',HttpStatus.NOT_FOUND);
+      throw new HttpException('Objetivo inválido!', HttpStatus.NOT_FOUND);
     }
-    return this.produtoService.findByObjetivo(objetivo as 'emagrecer' | 'hipertrofia' | 'geral');
+    return this.produtoService.findByObjetivo(
+      objetivo as 'emagrecer' | 'hipertrofia' | 'geral',
+    );
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   create(@Body() produto: Produto): Promise<Produto> {
     return this.produtoService.create(produto);
   }
 
   @Put()
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   update(@Body() produto: Produto): Promise<Produto> {
     return this.produtoService.update(produto);
@@ -69,6 +71,7 @@ export class ProdutoController {
   @Delete('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth()
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.produtoService.delete(id);
   }

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
@@ -19,7 +20,7 @@ export class Categoria {
   @ApiProperty()
   descricao: string;
 
-  @ApiProperty({ type: () => [Produto] })
   @OneToMany(() => Produto, (produto) => produto.categoria)
-  produto: Produto[];
+  @ApiProperty({ type: () => [Produto], required: false }) // ← Adicione required: false
+  produto?: Produto[];
 }
