@@ -51,6 +51,7 @@ export class AuthService {
       senha: '',
       foto: buscaUsuario.foto,
       token: `Bearer ${this.jwtService.sign(payload)}`,
+      isMasterAdmin: buscaUsuario.isMasterAdmin,
     };
   }
 }

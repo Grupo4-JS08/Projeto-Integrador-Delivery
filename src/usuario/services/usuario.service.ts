@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -44,6 +45,7 @@ export class UsuarioService {
       throw new HttpException('O Usuario já existe!', HttpStatus.BAD_REQUEST);
 
     usuario.senha = await this.bcrypt.criptografarSenha(usuario.senha);
+    
     return await this.usuarioRepository.save(usuario);
   }
 
