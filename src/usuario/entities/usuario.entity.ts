@@ -10,7 +10,7 @@ export class Usuario {
   id: number;
 
   @Column({ type: 'boolean', default: false })
-  isMasterAdmin?: boolean
+  isMasterAdmin?: boolean;
 
   @IsNotEmpty()
   @Column({ length: 255, nullable: false })
@@ -41,4 +41,10 @@ export class Usuario {
   @Column({ length: 5000 })
   @ApiProperty()
   objetivo: string;
+
+  @Column({ length: 255, nullable: true })
+  tokenRecuperacao: string | null;
+
+  @Column({ nullable: true })
+  tokenExpiracao: Date | null;
 }

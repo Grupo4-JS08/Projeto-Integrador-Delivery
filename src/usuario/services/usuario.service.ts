@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable prettier/prettier */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -45,7 +45,7 @@ export class UsuarioService {
       throw new HttpException('O Usuario já existe!', HttpStatus.BAD_REQUEST);
 
     usuario.senha = await this.bcrypt.criptografarSenha(usuario.senha);
-    
+
     return await this.usuarioRepository.save(usuario);
   }
 
@@ -62,5 +62,105 @@ export class UsuarioService {
 
     usuario.senha = await this.bcrypt.criptografarSenha(usuario.senha);
     return await this.usuarioRepository.save(usuario);
+  }
+
+  async solicitarRecuperacaoSenha(email: string): Promise<{ message: string }> {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { usuario: email },
+    });
+
+    if (!usuario) {
+      return {
+        message: 'Se o email existir em nosso sistema, enviaremos instruções de recuperação.',
+      };
+    }
+
+    // 1. Gerar um token/código de recuperação
+    const codigoRecuperacao = Math.random()
+      .toString(36)
+      .substring(2, 8)
+      .toUpperCase();
+    const expiracao = new Date();
+    expiracao.setHours(expiracao.getHours() + 1); // Expira em 1 hora
+
+    // 2. Salvar no banco com expiração
+    usuario.tokenRecuperacao = await this.bcrypt.criptografarSenha(codigoRecuperacao);
+    usuario.tokenExpiracao = expiracao;
+
+    await this.usuarioRepository.save(usuario);
+
+    // 3. Log para desenvolvimento (remova em produção)
+    console.log(`=== CÓDIGO DE RECUPERAÇÃO ===`);
+    console.log(`Para: ${email}`);
+    console.log(`Código: ${codigoRecuperacao}`);
+    console.log(`Expira: ${expiracao.toISOString()}`); // Corrigido aqui
+    console.log(`=============================`);
+
+    return {
+      message: 'Se o email existir em nosso sistema, enviaremos instruções de recuperação.',
+    };
+  }
+
+  async validarCodigoRecuperacao(
+    email: string,
+    codigo: string,
+  ): Promise<{ valido: boolean }> {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { usuario: email },
+    });
+
+    if (!usuario || !usuario.tokenRecuperacao || !usuario.tokenExpiracao) {
+      return { valido: false };
+    }
+
+    // Verificar se o token expirou
+    if (new Date() > usuario.tokenExpiracao) {
+      // Limpar token expirado
+      usuario.tokenRecuperacao = null;
+      usuario.tokenExpiracao = null;
+      await this.usuarioRepository.save(usuario);
+      return { valido: false };
+    }
+
+    // Verificar se o código está correto
+    const codigoValido = await this.bcrypt.compararSenhas(
+      codigo,
+      usuario.tokenRecuperacao,
+    );
+
+    return { valido: codigoValido };
+  }
+
+  async redefinirSenha(
+    email: string,
+    codigo: string,
+    novaSenha: string,
+  ): Promise<{ message: string }> {
+    const validacao = await this.validarCodigoRecuperacao(email, codigo);
+
+    if (!validacao.valido) {
+      throw new HttpException(
+        'Código inválido ou expirado.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const usuario = await this.findByUsuario(email);
+    if (!usuario) {
+      throw new HttpException('Usuário não encontrado.', HttpStatus.NOT_FOUND);
+    }
+
+    // Atualizar senha
+    usuario.senha = await this.bcrypt.criptografarSenha(novaSenha);
+
+    // Limpar tokens de recuperação
+    usuario.tokenRecuperacao = null;
+    usuario.tokenExpiracao = null;
+
+    await this.usuarioRepository.save(usuario);
+
+    return {
+      message: 'Senha redefinida com sucesso!',
+    };
   }
 }
