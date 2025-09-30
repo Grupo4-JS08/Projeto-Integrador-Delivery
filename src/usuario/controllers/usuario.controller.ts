@@ -69,7 +69,6 @@ export class UsuarioController {
   }
 
     @Delete('/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Excluir usuário por ID' })
   @ApiResponse({
