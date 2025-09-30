@@ -2,6 +2,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -45,7 +46,6 @@ export class UsuarioController {
   }
 
   @Put('/atualizar')
-  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async update(@Body() usuario: Usuario): Promise<Usuario> {
     return this.usuarioService.update(usuario);
@@ -66,5 +66,21 @@ export class UsuarioController {
     return await this.usuarioService.solicitarRecuperacaoSenha(
       recuperarSenhaDto.email
     );
+  }
+
+    @Delete('/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Excluir usuário por ID' })
+  @ApiResponse({
+    status: 204,
+    description: 'Usuário excluído com sucesso'
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado'
+  })
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.usuarioService.delete(id);
   }
 }
