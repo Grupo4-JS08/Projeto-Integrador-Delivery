@@ -1,6 +1,6 @@
 /* eslint-disable*/
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, MinLength, Matches } from 'class-validator';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'tb_usuarios' })
@@ -21,6 +21,13 @@ export class Usuario {
   @Column({ length: 255, nullable: false })
   @ApiProperty()
   endereco: string;
+
+  // ADICIONE ESTE CAMPO
+  @IsNotEmpty()
+  @Matches(/^\d{5}-?\d{3}$/, { message: 'CEP deve estar no formato 00000-000 ou 00000000' })
+  @Column({ length: 10, nullable: false })
+  @ApiProperty({ example: '12345-678' })
+  cep: string;
 
   @IsEmail()
   @Column({ length: 255, nullable: false })
