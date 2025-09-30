@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario } from '../entities/usuario.entity';
@@ -171,5 +176,17 @@ export class UsuarioService {
     return {
       message: 'Senha redefinida com sucesso!',
     };
+  }
+
+  async delete(id: number): Promise<void> {
+    // Verifica se o usuário existe
+    const usuario = await this.findById(id);
+
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    // Exclui o usuário
+    await this.usuarioRepository.delete(id);
   }
 }
