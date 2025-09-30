@@ -1,4 +1,5 @@
-/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -71,7 +72,8 @@ export class UsuarioService {
 
     if (!usuario) {
       return {
-        message: 'Se o email existir em nosso sistema, enviaremos instruções de recuperação.',
+        message:
+          'Se o email existir em nosso sistema, enviaremos instruções de recuperação.',
       };
     }
 
@@ -84,7 +86,8 @@ export class UsuarioService {
     expiracao.setHours(expiracao.getHours() + 1); // Expira em 1 hora
 
     // 2. Salvar no banco com expiração
-    usuario.tokenRecuperacao = await this.bcrypt.criptografarSenha(codigoRecuperacao);
+    usuario.tokenRecuperacao =
+      await this.bcrypt.criptografarSenha(codigoRecuperacao);
     usuario.tokenExpiracao = expiracao;
 
     await this.usuarioRepository.save(usuario);
@@ -93,11 +96,12 @@ export class UsuarioService {
     console.log(`=== CÓDIGO DE RECUPERAÇÃO ===`);
     console.log(`Para: ${email}`);
     console.log(`Código: ${codigoRecuperacao}`);
-    console.log(`Expira: ${expiracao.toISOString()}`); // Corrigido aqui
+    console.log(`Expira: ${expiracao.toISOString()}`);
     console.log(`=============================`);
 
     return {
-      message: 'Se o email existir em nosso sistema, enviaremos instruções de recuperação.',
+      message:
+        'Se o email existir em nosso sistema, enviaremos instruções de recuperação.',
     };
   }
 
@@ -109,15 +113,20 @@ export class UsuarioService {
       where: { usuario: email },
     });
 
-    if (!usuario || !usuario.tokenRecuperacao || !usuario.tokenExpiracao) {
+    // Verifique se existe e se os campos não são undefined
+    if (
+      !usuario ||
+      usuario.tokenRecuperacao === undefined ||
+      usuario.tokenExpiracao === undefined
+    ) {
       return { valido: false };
     }
 
     // Verificar se o token expirou
     if (new Date() > usuario.tokenExpiracao) {
-      // Limpar token expirado
-      usuario.tokenRecuperacao = null;
-      usuario.tokenExpiracao = null;
+      // Limpar token expirado - use undefined em vez de null
+      usuario.tokenRecuperacao = undefined as any;
+      usuario.tokenExpiracao = undefined as any;
       await this.usuarioRepository.save(usuario);
       return { valido: false };
     }
@@ -153,9 +162,9 @@ export class UsuarioService {
     // Atualizar senha
     usuario.senha = await this.bcrypt.criptografarSenha(novaSenha);
 
-    // Limpar tokens de recuperação
-    usuario.tokenRecuperacao = null;
-    usuario.tokenExpiracao = null;
+    // Limpar tokens de recuperação - use undefined
+    usuario.tokenRecuperacao = undefined as any;
+    usuario.tokenExpiracao = undefined as any;
 
     await this.usuarioRepository.save(usuario);
 

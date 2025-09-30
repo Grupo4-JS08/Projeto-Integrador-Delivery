@@ -43,8 +43,8 @@ export class Usuario {
   objetivo: string;
 
   @Column({ length: 255, nullable: true })
-  tokenRecuperacao: string | null;
+  tokenRecuperacao?: string;
 
-  @Column({ nullable: true })
-  tokenExpiracao: Date | null;
+  @Column({ type: 'timestamp', nullable: true })
+  tokenExpiracao?: Date;
 }
