@@ -11,11 +11,12 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
 import { Usuario } from '../entities/usuario.entity';
 import { UsuarioService } from '../services/usuario.service';
 import { RolesGuard } from '../../auth/guard/roles.guard';
+import { RecuperarSenhaDto } from '../dto/recuperar-senha.dto';
 
 @ApiTags('Usuario')
 @Controller('/usuarios')
@@ -48,5 +49,22 @@ export class UsuarioController {
   @HttpCode(HttpStatus.OK)
   async update(@Body() usuario: Usuario): Promise<Usuario> {
     return this.usuarioService.update(usuario);
+  }
+
+  @Post('/recuperar-senha')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Solicitar recuperação de senha' })
+  @ApiResponse({
+    status: 200,
+    description: 'Solicitação de recuperação processada com sucesso'
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos'
+  })
+  async recuperarSenha(@Body() recuperarSenhaDto: RecuperarSenhaDto) {
+    return await this.usuarioService.solicitarRecuperacaoSenha(
+      recuperarSenhaDto.email
+    );
   }
 }
