@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable prettier/prettier */
 import {
-  Request,
+  Body,
   Controller,
   HttpCode,
   HttpStatus,
@@ -11,6 +10,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { LocalAuthGuard } from '../guard/local-auth.guard';
 import { AuthService } from '../services/auth.service';
+import { UsuarioLogin } from './../entities/usuariologin.entity';
 
 @ApiTags('Usuario')
 @Controller('/usuarios')
@@ -20,7 +20,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('/logar')
-  async login(@Request() req): Promise<any> {
-    return this.authService.login(req.user);
+  async login(@Body() user: UsuarioLogin): Promise<any> {
+    return this.authService.login(user);
   }
 }
