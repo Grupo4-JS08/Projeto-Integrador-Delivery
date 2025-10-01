@@ -7,26 +7,27 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-// automatiza as roles
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
-/
+
   canActivate(context: ExecutionContext): boolean {
-    let usuario: any;
+    // Obtém o usuário da request
+    const usuario = context.switchToHttp().getRequest().user;
 
-    usuario = context.switchToHttp().getRequest().user;
-
+    // Se não há usuário (não autenticado), permite passar para outros guards
     if (!usuario) {
       return true;
     }
 
-    if (usuario.user.isMasterAdmin) {
+    // Se é master admin, permite acesso
+    if (usuario.isMasterAdmin) {
       return true;
     }
 
+    // Se não é master admin, lança exceção
     throw new ForbiddenException(
-      'Você não tem permissão para acessar o recurso "',
+      'Você não tem permissão para acessar este recurso',
     );
   }
 }
