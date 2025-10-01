@@ -11,7 +11,7 @@ import { Reflector } from '@nestjs/core';
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
-
+/
   canActivate(context: ExecutionContext): boolean {
     let usuario: any;
 

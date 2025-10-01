@@ -6,33 +6,20 @@ import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
+  private _usernameField: string;
+  private _passwordField: string;
+
   constructor(private readonly authService: AuthService) {
-    super({
-      usernameField: 'usuario',  // Nome do campo no JSON
-      passwordField: 'senha',    // Nome do campo no JSON
-    });
-    console.log('✅ LocalStrategy configurado com:', {
-      usernameField: 'usuario',
-      passwordField: 'senha'
-    });
+    super();
+    this._usernameField = 'usuario';
+    this._passwordField = 'senha';
   }
 
   async validate(usuario: string, senha: string): Promise<any> {
-    console.log('🔐 LocalStrategy validate chamado:', { usuario, senha: '***' });
-
-    try {
-      const validaUsuario = await this.authService.validateUser(usuario, senha);
-
-      if (!validaUsuario) {
-        console.log('❌ Usuário não validado');
-        throw new UnauthorizedException('Usuário e/ou senha incorretos!');
-      }
-
-      console.log('✅ Usuário validado no LocalStrategy');
-      return validaUsuario;
-    } catch (error) {
-      console.error('❌ Erro no LocalStrategy:', error);
-      throw error;
+    const validaUsuario = await this.authService.validateUser(usuario, senha);
+    if (!validaUsuario) {
+      throw new UnauthorizedException('Usuário e/ou senha incorretos!');
     }
+    return validaUsuario;
   }
-} 
+}
