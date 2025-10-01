@@ -1,4 +1,4 @@
-/* eslint-disable*/
+/* eslint-disable */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
@@ -6,12 +6,8 @@ import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  private _usernameField: string;
-  private _passwordField: string;
-
   constructor(private readonly authService: AuthService) {
-    super();
-    super({ usernameField: 'usuario', passwordField: 'senha' });
+    super({ usernameField: 'usuario', passwordField: 'senha' }); // ✅ só essa chamada
   }
 
   async validate(usuario: string, senha: string): Promise<any> {
