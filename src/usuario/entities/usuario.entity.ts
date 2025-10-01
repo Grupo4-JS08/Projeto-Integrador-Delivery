@@ -22,12 +22,12 @@ export class Usuario {
   @ApiProperty()
   endereco: string;
 
-  // ADICIONE ESTE CAMPO
-  @IsNotEmpty()
+  // CEP deve ser opcional
+  @IsOptional()
   @Matches(/^\d{5}-?\d{3}$/, { message: 'CEP deve estar no formato 00000-000 ou 00000000' })
-  @Column({ length: 10, nullable: false })
+  @Column({ length: 10, nullable: true }) // nullable: true é IMPORTANTE
   @ApiProperty({ example: '12345-678' })
-  cep: string;
+  cep?: string; // Use ? para indicar que é opcional
 
   @IsEmail()
   @Column({ length: 255, nullable: false })
