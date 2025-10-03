@@ -50,7 +50,7 @@ export class AuthService {
       usuario: usuarioLogin.usuario,
       senha: '',
       foto: buscaUsuario.foto,
-      token: `Bearer ${this.jwtService.sign(payload)}`,
+      token: this.jwtService.sign(payload),
       isMasterAdmin: buscaUsuario.isMasterAdmin,
     };
   }
