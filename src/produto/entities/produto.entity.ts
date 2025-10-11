@@ -17,12 +17,12 @@ export class Produto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Column({ nullable: false })
+  @Column('decimal', { precision: 10, scale: 2, nullable: false })
   valor: number;
 
   @ApiProperty()
   @IsNotEmpty()
-  @Column({ nullable: false })
+  @Column('decimal', { precision: 10, scale: 2, nullable: false })
   calorias: number;
 
   @ApiProperty()
