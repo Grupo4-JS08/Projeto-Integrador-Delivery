@@ -17,12 +17,12 @@ export class Produto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  @Column('decimal', { precision: 10, scale: 2, nullable: false })
   valor: number;
 
   @ApiProperty()
   @IsNotEmpty()
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  @Column('decimal', { precision: 10, scale: 2, nullable: false })
   calorias: number;
 
   @ApiProperty()
@@ -36,5 +36,4 @@ export class Produto {
     onDelete: 'CASCADE',
   })
   categoria: Categoria;
-
 }
